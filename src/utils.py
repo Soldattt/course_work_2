@@ -10,9 +10,7 @@ def filter_aeroplanes(data, filter_words):
                 if i["country"] == word:
                     result.append(i)
 
-
         return result
-
 
 
 def get_aeroplanes_by_altitude(data, altitude_range):
@@ -25,7 +23,6 @@ def get_aeroplanes_by_altitude(data, altitude_range):
         return result
 
 
-
 def get_top_aeroplanes(data, top_n):
     if data:
         top = nlargest(top_n, data, key=lambda item: item["velocity"])
@@ -35,5 +32,3 @@ def get_top_aeroplanes(data, top_n):
             print("Самолетов по Вашему запросу не найдено")
     else:
         return "Самолетов по Вашему запросу не найдено"
-
-

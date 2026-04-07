@@ -14,7 +14,6 @@ URL_2 = os.getenv("URL_2")
 class GetApi(ABC):
     """Абстрактный класс для получения данных из api"""
 
-
     @abstractmethod
     def get_api_openstreetmap(self, *args, **kwargs):
         pass
@@ -24,11 +23,10 @@ class GetApi(ABC):
         pass
 
 
-
 class GetApiAero(GetApi):
     """Класс получает наименование страны, делает запросы о самолетах в этой стране и выводит список"""
 
-    def __init__(self, country:str) -> None:
+    def __init__(self, country: str) -> None:
         """Метод конструктор"""
         self.__openstreetmap_url = URL_1
         self.__opensky_url = URL_2
@@ -70,7 +68,6 @@ class GetApiAero(GetApi):
             return data[0].get("boundingbox")
         else:
             print("Данных по Вашей стране нет")
-
 
     def get_api_opensky(self) -> list:
         """Метод для работы с api, получает данные из предыдущего метода,
