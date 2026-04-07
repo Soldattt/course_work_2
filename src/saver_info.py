@@ -1,41 +1,50 @@
 import json
-import os
 from abc import ABC, abstractmethod
+import os
 
-from src.aircraft import Aircraft
+
+
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-path = os.path.join(project_root, "data", "info.json")
+path_json = os.path.join(project_root, "data", "info.json")
 
 
-class SaverInfo(ABC):
+class FileInfo(ABC):
     """Абстрактный класс для записи информации в файл json"""
 
     @abstractmethod
-    def __init__(self, path):
+    def __init__(self):
+        pass
+
+
+    @abstractmethod
+    def add_info(self):
         pass
 
     @abstractmethod
-    def save_info(self):
+    def delete_info(self):
         pass
 
-
-class SaverInfoAircraft(SaverInfo):
+class InfoJSON(FileInfo):
     """Класс получает объект класса Aircraft и путь к файлу и записывает данные в файл, а также выводит в консоль"""
-
-    data = Aircraft
 
     def __init__(self, data):
         """Метод конструктор"""
-        super().__init__(path)
+        self.__path = path_json
         self.data = data
-        self.path = path
 
-    def save_info(self):
+
+    def add_info(self):
         """Метод получает данные из класса Aircraft и путь к файлу и записывает данные в файл,
-        а также выводит в консоль"""
-        items = self.data.info()
+               а также выводит в консоль"""
+        items = self.data
         print(items)
         print("Данные записаны в файл info.json")
-        with open(f"{path}", "w", encoding="utf-8") as f:
+        with open(f"{self.__path}", "w", encoding="utf-8") as f:
             json.dump(items, f, ensure_ascii=False)
+
+
+    def delete_info(self):
+        with open(f"{self.__path}", "w", encoding="utf-8") as f:
+            f.truncate(0)
+        print("Данные удалены из файла info.json")
