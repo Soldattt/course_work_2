@@ -1,12 +1,12 @@
 from src.aircraft import Aircraft
 from src.get_api import GetApiAero
 from src.saver_info import InfoJSON
-from src.utils import filter_aeroplanes, get_aeroplanes_by_altitude, get_top_aeroplanes
+from src.utils import filter_aeroplanes, get_top_aeroplanes
 
 
 # Функция для взаимодействия с пользователем
 def user_interaction():
-    country = input("Введите название страны:Belarus ")
+    country = input("Введите название страны: ")
     top_n = int(input("Введите количество самолетов для вывода в топ N: "))
     filter_words = input(
         "Введите названия стран для фильтрации по стране регистрации (введите наименование стран через запятую): "
@@ -23,14 +23,18 @@ def user_interaction():
     aeroplanes = api.get_api_opensky()
 
     # Преобразование набора данных в список объектов
-    aero = Aircraft(aeroplanes)
-    aeroplanes = aero.cast_to_object_list()
+    aero = Aircraft()
+    aeroplanes = aero.cast_to_object_list(aeroplanes)
+    # Пример работы контструктора класса с одним самолетом
+    #aeroplanes = Aircraft("UAL1621", "United States", 268.79, 10203.18)
+
+
 
     filtered_aeroplanes = filter_aeroplanes(aeroplanes, filter_words)
 
-    ranged_aeroplanes = get_aeroplanes_by_altitude(filtered_aeroplanes, altitude_range)
 
-    top_aeroplanes = get_top_aeroplanes(ranged_aeroplanes, top_n)
+
+    top_aeroplanes = get_top_aeroplanes(filtered_aeroplanes, top_n)
 
     # Сохранение информации в файл
     json_saver = InfoJSON(top_aeroplanes)
