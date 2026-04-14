@@ -47,7 +47,7 @@ class GetApiAero(GetApi):
         except requests.exceptions.HTTPError as e:
             print("Ошибка подключения:", e)
 
-    def get_api_openstreetmap(self) -> list[dict]:
+    def get_api_openstreetmap(self):
         """Метод для работы с api, получает наименование страны,
         делает запросы о самолетах в этой стране и выводит список самолетов"""
 
@@ -69,7 +69,7 @@ class GetApiAero(GetApi):
         else:
             print("Данных по Вашей стране нет")
 
-    def get_api_opensky(self) -> list:
+    def get_api_opensky(self):
         """Метод для работы с api, получает данные из предыдущего метода,
         делает запросы о самолетах в этой стране и выводит список самолетов по конкретным
         параметрам, если на вход поступает пустой список, выводит сообщение об отсутствии самолетов"""

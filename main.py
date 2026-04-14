@@ -1,46 +1,40 @@
-from src.aircraft import Aircraft
+from src.aircraft import aircraft_list_from_opensky
 from src.get_api import GetApiAero
 from src.saver_info import InfoJSON
-from src.utils import filter_aeroplanes, get_top_aeroplanes
+from src.utils import filter_aeroplanes, filter_by_altitude_range, format_aircraft_report, top_by_altitude
 
 
-# Функция для взаимодействия с пользователем
-def user_interaction():
-    country = input("Введите название страны: ")
-    top_n = int(input("Введите количество самолетов для вывода в топ N: "))
-    filter_words = input(
-        "Введите названия стран для фильтрации по стране регистрации (введите наименование стран через запятую): "
-    ).split(",")
-    altitude_range = input(
-        "Введите диапазон высот полета (введите начальную и конечную высоту полета через тире '-'): "
-    ).split(
-        "-"
-    )  # Пример: 100000 - 150000
+def user_interaction() -> None:
+    country = input("Введите название страны (латиницей, например Belarus): ").strip()
+    top_n = int(input("Введите количество самолётов для топа N: ").strip())
+    if top_n <= 0:
+        raise ValueError("N должно быть больше нуля")
+
+    raw_filters = input("Страны регистрации через запятую (латиницей, например United States,Germany): ")
+    filter_words = [w.strip() for w in raw_filters.split(",") if w.strip()]
+
+    alt_raw = input("Диапазон высот через дефис, например 8000-12000: ").strip()
+    low_s, high_s = [x.strip() for x in alt_raw.split("-", maxsplit=1)]
+    altitude_low = float(low_s)
+    altitude_high = float(high_s)
 
     api = GetApiAero(country)
+    payload = api.get_api_opensky()
+    if not payload:
+        print("Не удалось получить данные о самолётах.")
+        return
 
-    # Получение информации о самолетах с opensky-network.org
-    aeroplanes = api.get_api_opensky()
+    planes = aircraft_list_from_opensky(payload)
+    planes = filter_aeroplanes(planes, filter_words)
+    planes = filter_by_altitude_range(planes, altitude_low, altitude_high)
+    top_planes = top_by_altitude(planes, top_n)
 
-    # Преобразование набора данных в список объектов
-    aero = Aircraft()
-    aeroplanes = aero.cast_to_object_list(aeroplanes)
-    # Пример работы контструктора класса с одним самолетом
-    #aeroplanes = Aircraft("UAL1621", "United States", 268.79, 10203.18)
+    report = format_aircraft_report(top_planes)
+    print(report)
 
-
-
-    filtered_aeroplanes = filter_aeroplanes(aeroplanes, filter_words)
-
-
-
-    top_aeroplanes = get_top_aeroplanes(filtered_aeroplanes, top_n)
-
-    # Сохранение информации в файл
-    json_saver = InfoJSON(top_aeroplanes)
-    json_saver.add_info()
-    # Удаление информации из файла
-    json_saver.delete_info()
+    records = [p.cast_to_object_list() for p in top_planes]
+    saver = InfoJSON()
+    saver.add_info(records)
 
 
 if __name__ == "__main__":
